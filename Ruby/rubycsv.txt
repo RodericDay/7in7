@@ -1,0 +1,4 @@
+animal, color
+lion, yellow
+tiger, orange
+seal, grey

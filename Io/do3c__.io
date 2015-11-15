@@ -55,13 +55,19 @@ Builder forward ::= method(
 
     write(indent, "<", call message name)
     self indentLevel = self indentLevel + 1
+    tagClosePending := true
     call message arguments foreach(arg,
 
         content := self doMessage(arg);
-        if(content type == "Map", writeln(" ", content toFlatString, ">"))
+
+        if(tagClosePending and content type == "Map", writeln(" ", content toFlatString, ">"))
+        if(tagClosePending and content type != "Map", writeln(">"))
+        tagClosePending = false
+
         if(content type == "Sequence", writeln("  ", indent, content))
 
     )
+    if(tagClosePending, writeln(">") ) // no arg condition, so close
     self indentLevel = self indentLevel - 1
     writeln(indent, "</", call message name, ">")
 
@@ -69,7 +75,7 @@ Builder forward ::= method(
 
 
 Builder meal({"type": "lunch", "cost": 99},
-            appetizer("soup"),
+            appetizer("soup", "salad"),
             main({"vegetarian": true}, "pasta"),
             dessert("ice cream"),
             notes

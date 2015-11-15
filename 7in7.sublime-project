@@ -10,7 +10,7 @@
         ,
         {
             "name": "7in7 (Io)",
-            "cmd": ["io $file"],
+            "cmd": ["io `sed 's/_//g' <<< $file`"],
             "shell": true,
             "env": {
                 "PATH": "/usr/local/bin:$PATH",

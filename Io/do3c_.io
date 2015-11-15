@@ -1,0 +1,1 @@
+OperatorTable addAssignOperator(":", "colonAssign")

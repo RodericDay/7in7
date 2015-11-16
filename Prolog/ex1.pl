@@ -4,16 +4,10 @@ likes(grommit, cheese).
 likes(wendolene, sheep).
 friend(X, Y) :- \+(X = Y), likes(X, Z), likes(Y, Z).
 
-% service predicates, check the library and use that if available
-forall(X,Y) :- \+ (X, \+ Y).
-writeln(T) :- write(T), nl.
+:- begin_tests(this).
 
-% define queries we want answers to
-query(likes(wallace, cheese)).
-query(likes(mickey, whisky)).
+test(this) :- likes(wallace, cheese).
+test(this) :- bagof(Who, likes(Who, cheese), [wallace, grommit]).
+test(this) :- \+ bagof(Who, likes(Who, wine), [wallace]).
 
-% run script
-:- initialization main.
-main :-
-    forall(query(Q), (Q -> writeln(Q:yes) ; writeln(Q:no))),
-    halt.
+:- end_tests(this).

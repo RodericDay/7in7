@@ -19,7 +19,7 @@
         ,
         {
             "name": "7in7 (Prolog)",
-            "cmd": ["swipl $file"],
+            "cmd": ["swipl -s $file -g run_tests -t halt"],
             "shell": true,
             "env": {
                 "PATH": "/usr/local/bin:$PATH",

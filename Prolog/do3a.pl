@@ -60,22 +60,14 @@ sudoku(Puzzle, Solution) :-
                ColA, ColB, ColC, ColD, ColE, ColF, ColG, ColH, ColI,
                Box1, Box2, Box3, Box4, Box5, Box6, Box7, Box8, Box9]).
 
-:- begin_tests(this).
-
-test(printing) :- nl,
-            read_term_from_atom(
-                'sudoku([_, _, 3, _, 2, _, 6, _, _,
-                         9, _, _, 3, _, 5, _, _, 1,
-                         _, _, 1, 8, _, 6, 4, _, _,
-                         _, _, 8, 1, _, 2, 9, _, _,
-                         7, _, _, _, _, _, _, _, 8,
-                         _, _, 6, 7, _, 8, 2, _, _,
-                         _, _, 2, 6, _, 9, 5, _, _,
-                         8, _, _, 2, _, 3, _, _, 9,
-                         _, _, 5, _, 1, _, 3, _, _], Solution).',
-                IfTrue,
-                [variable_names(S)]
-            ),
-            IfTrue -> writeln(S).
-
-:- end_tests(this).
+main :- sudoku([
+  _, _, 3, _, 2, _, 6, _, _,
+  9, _, _, 3, _, 5, _, _, 1,
+  _, _, 1, 8, _, 6, 4, _, _,
+  _, _, 8, 1, _, 2, 9, _, _,
+  7, _, _, _, _, _, _, _, 8,
+  _, _, 6, 7, _, 8, 2, _, _,
+  _, _, 2, 6, _, 9, 5, _, _,
+  8, _, _, 2, _, 3, _, _, 9,
+  _, _, 5, _, 1, _, 3, _, _
+  ], Solution), writeln(Solution).

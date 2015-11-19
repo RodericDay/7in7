@@ -1,57 +1,76 @@
-/*
-nationality = brit, dane, german, norwegian, swede
-colors      = blue, green, red, white, yellow
-beverages   = beer, coffee, milk, tea, water
-smokes      = bluemaster, dunhill, pallmall, prince, blend
-keeps       = cat, bird, dog, fish, horse
-position    = 1, 2, 3, 4, 5
-*/
+solve(Neighborhood) :-
 
-% 1.  The Brit lives in a red house.
-% 2.  The Swede keeps dogs as pets.
-% 3.  The Dane drinks tea.
-% 4.  The green house is on the left of the white house (next to it).
-% 5.  The green house owner drinks coffee.
-% 6.  The person who smokes Pall Mall rears birds.
-% 7.  The owner of the yellow house smokes Dunhill.
-% 8.  The man living in the house right in the center drinks milk.
-% 9.  The Norwegian lives in the first house.
-% 10. The man who smokes blend lives next to the one who keeps cats.
-% 11. The man who keeps horses lives next to the man who smokes Dunhill.
-% 12. The owner who smokes Blue Master drinks beer.
-% 13. The German smokes Prince.
-% 14. The Norwegian lives next to the blue house.
-% 15. The man who smokes blend has a neighbor who drinks water.
+  /*
+  the solution consists of five compounds
+  each compound consists of the six traits of a house, in order
 
-mutually_exclusive([A|As],S):- select(A,S,S1), mutually_exclusive(As,S1).
-mutually_exclusive([],_).
+  position    = 1, 2, 3, 4, 5
+  nationality = brit, dane, german, norwegian, swede
+  colors      = blue, green, red, white, yellow
+  beverages   = beer, coffee, milk, tea, water
+  smokes      = bluemaster, dunhill, pallmall, prince, blend
+  keeps       = cat, bird, dog, fish, horse
+  */
 
-left_of(A,B,C):- append(_,[A,B|_],C).
-next_to(A,B,C):- left_of(A,B,C) ; left_of(B,A,C).
+  % the neighborhood looks like this
+  Neighborhood = [
+    (1,_,_,_,_,_),
+    (2,_,_,_,_,_),
+    (3,_,_,_,_,_),
+    (4,_,_,_,_,_),
+    (5,_,_,_,_,_)],
 
-solve(All) :-
-  All   = [ (_,norwegian,_,_,_),
-            (blue,_,_,_,_),
-            (_,_,_,milk,_),
-            _,
-            _ ],
-  mutually_exclusive([  (red,brit,_,_,_),
-                        (_,swede,dog,_,_),
-                        (_,dane,_,tea,_),
-                        (_,german,_,_,prince)
-                        ], All),
-  mutually_exclusive([  (_,_,birds,_,pallmall),
-                        (yellow,_,_,_,dunhill),
-                        (_,_,_,beer,bluemaster),
-                        (_,_,fish,_,_)
-                        ], All),
-  left_of(  (green,_,_,coffee,_),
-            (white,_,_,_,_), All),
-  next_to(  (_,_,_,_,dunhill),
-            (_,_,horse,_,_), All),
-  next_to(  (_,_,_,_,blend),
-            (_,_,cats, _,_), All),
-  next_to(  (_,_,_,_,blend),
-            (_,_,_,water,_), All).
+  % 1.  The Brit lives in a red house.
+  member( (_,brit,red,_,_,_), Neighborhood),
 
-main :- solve(All), maplist(writeln, All).
+  % 2.  The Swede keeps dogs as pets.
+  member( (_,swede,_,_,_,dog), Neighborhood),
+
+  % 3.  The Dane drinks tea.
+  member( (_,dane,_,tea,_,_), Neighborhood),
+
+  % 4.  The green house is on the left of the white house (next to it).
+  member( (A,_,green,_,_), Neighborhood), B is A+1,
+  member( (B,_,white,_,_), Neighborhood),
+
+  % 5.  The green house owner drinks coffee.
+  member( (_,_,green,coffee,_,_), Neighborhood),
+
+  % 6.  The person who smokes Pall Mall rears birds.
+  member( (_,_,_,_,pallmall,birds), Neighborhood),
+
+  % 7.  The owner of the yellow house smokes Dunhill.
+  member( (_,_,yellow,_,dunhill,_), Neighborhood),
+
+  % 8.  The man living in the house right in the center drinks milk.
+  member( (3,_,_,milk,_,_), Neighborhood),
+
+  % 9.  The Norwegian lives in the first house.
+  member( (1,norwegian,_,_,_,_), Neighborhood),
+
+  % 10. The man who smokes blend lives next to the one who keeps cats.
+  member( (C,_,_,_,blend,_), Neighborhood), D is C-1,
+  member( (D,_,_,_,_,cats), Neighborhood),
+
+  % 11. The man who keeps horses lives next to the man who smokes Dunhill.
+  member( (E,_,_,_,_,horses), Neighborhood), F is E-1,
+  member( (F,_,_,_,dunhill,_), Neighborhood),
+
+  % 12. The owner who smokes Blue Master drinks beer.
+  member( (_,_,_,beer,bluemaster,_), Neighborhood),
+
+  % 13. The German smokes Prince.
+  member( (_,german,_,_,prince,_), Neighborhood),
+
+  % 14. The Norwegian lives next to the blue house.
+  member( (G,norwegian,_,_,_,_), Neighborhood), H is G+1,
+  member( (H,_,blue,_,_,_), Neighborhood),
+
+  % 15. The man who smokes blend has a neighbor who drinks water.
+  member( (I,_,_,_,blend,_), Neighborhood), J is I-1,
+  member( (J,_,_,water,_,_), Neighborhood),
+
+  % Question: Who owns the fish?
+  member( (_,_,_,_,_,fish), Neighborhood).
+
+main :- solve(Neighborhood), maplist(writeln, Neighborhood).

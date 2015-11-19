@@ -49,11 +49,11 @@ solve(Neighborhood) :-
   member( (1,norwegian,_,_,_,_), Neighborhood),
 
   % 10. The man who smokes blend lives next to the one who keeps cats.
-  member( (C,_,_,_,blend,_), Neighborhood), D is C-1,
+  member( (C,_,_,_,blend,_), Neighborhood), plus_or_minus_one(C, D),
   member( (D,_,_,_,_,cats), Neighborhood),
 
   % 11. The man who keeps horses lives next to the man who smokes Dunhill.
-  member( (E,_,_,_,_,horses), Neighborhood), F is E-1,
+  member( (E,_,_,_,_,horses), Neighborhood), plus_or_minus_one(E, F),
   member( (F,_,_,_,dunhill,_), Neighborhood),
 
   % 12. The owner who smokes Blue Master drinks beer.
@@ -63,14 +63,17 @@ solve(Neighborhood) :-
   member( (_,german,_,_,prince,_), Neighborhood),
 
   % 14. The Norwegian lives next to the blue house.
-  member( (G,norwegian,_,_,_,_), Neighborhood), H is G+1,
+  member( (G,norwegian,_,_,_,_), Neighborhood), plus_or_minus_one(G, H),
   member( (H,_,blue,_,_,_), Neighborhood),
 
   % 15. The man who smokes blend has a neighbor who drinks water.
-  member( (I,_,_,_,blend,_), Neighborhood), J is I-1,
+  member( (I,_,_,_,blend,_), Neighborhood), plus_or_minus_one(I, J),
   member( (J,_,_,water,_,_), Neighborhood),
 
   % Question: Who owns the fish?
   member( (_,_,_,_,_,fish), Neighborhood).
+
+% This is probably very very very bad practice
+plus_or_minus_one(I, J) :- Im is I-1, Ip is I+1, member(J, [Im, Ip]).
 
 main :- solve(Neighborhood), maplist(writeln, Neighborhood).

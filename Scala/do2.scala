@@ -8,4 +8,9 @@ def translate(text:String, pairs:Map[String, String]) : String = {
     return copy
 }
 
+def length(script:List[String]) : Integer = {
+    // use fold to check size of text
+    return script.foldLeft(0)( (sum, line) => sum + line.length )
+}
+
 println( translate(text, pairs) )

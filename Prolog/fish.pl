@@ -1,3 +1,11 @@
+% this is meant to be passed with a maplist
+% if arguments lend itself to it, call member
+% else execute them as such
+memb_or_call(L,E) :- member(E,L).
+memb_or_call(_L,{E}) :- !, E.
+% the cut tells REDO nothing would come from of combining
+% the curly brackets to the list
+
 solve(Neighborhood) :-
 
   /*
@@ -20,58 +28,64 @@ solve(Neighborhood) :-
     (4,_,_,_,_,_),
     (5,_,_,_,_,_)],
 
+ maplist(memb_or_call(Neighborhood),[
   % 1.  The Brit lives in a red house.
-  member( (_,brit,red,_,_,_), Neighborhood),
+    (_,brit,red,_,_,_),
 
   % 2.  The Swede keeps dogs as pets.
-  member( (_,swede,_,_,_,dog), Neighborhood),
+    (_,swede,_,_,_,dog),
 
   % 3.  The Dane drinks tea.
-  member( (_,dane,_,tea,_,_), Neighborhood),
+    (_,dane,_,tea,_,_),
 
   % 4.  The green house is on the left of the white house (next to it).
-  member( (A,_,green,_,_), Neighborhood), B is A+1,
-  member( (B,_,white,_,_), Neighborhood),
+    (A,_,green,_,_),
+    (B,_,white,_,_),
+    {B is A+1},
 
   % 5.  The green house owner drinks coffee.
-  member( (_,_,green,coffee,_,_), Neighborhood),
+    (_,_,green,coffee,_,_),
 
   % 6.  The person who smokes Pall Mall rears birds.
-  member( (_,_,_,_,pallmall,birds), Neighborhood),
+    (_,_,_,_,pallmall,birds),
 
   % 7.  The owner of the yellow house smokes Dunhill.
-  member( (_,_,yellow,_,dunhill,_), Neighborhood),
+    (_,_,yellow,_,dunhill,_),
 
   % 8.  The man living in the house right in the center drinks milk.
-  member( (3,_,_,milk,_,_), Neighborhood),
+    (3,_,_,milk,_,_),
 
   % 9.  The Norwegian lives in the first house.
-  member( (1,norwegian,_,_,_,_), Neighborhood),
+    (1,norwegian,_,_,_,_),
 
   % 10. The man who smokes blend lives next to the one who keeps cats.
-  member( (C,_,_,_,blend,_), Neighborhood), plus_or_minus_one(C, D),
-  member( (D,_,_,_,_,cats), Neighborhood),
+    (C,_,_,_,blend,_),
+    (D,_,_,_,_,cats),
+    {plus_or_minus_one(C, D)},
 
   % 11. The man who keeps horses lives next to the man who smokes Dunhill.
-  member( (E,_,_,_,_,horses), Neighborhood), plus_or_minus_one(E, F),
-  member( (F,_,_,_,dunhill,_), Neighborhood),
+    (E,_,_,_,_,horses),
+    (F,_,_,_,dunhill,_),
+    {plus_or_minus_one(E, F)},
 
   % 12. The owner who smokes Blue Master drinks beer.
-  member( (_,_,_,beer,bluemaster,_), Neighborhood),
+    (_,_,_,beer,bluemaster,_),
 
   % 13. The German smokes Prince.
-  member( (_,german,_,_,prince,_), Neighborhood),
+    (_,german,_,_,prince,_),
 
   % 14. The Norwegian lives next to the blue house.
-  member( (G,norwegian,_,_,_,_), Neighborhood), plus_or_minus_one(G, H),
-  member( (H,_,blue,_,_,_), Neighborhood),
+    (G,norwegian,_,_,_,_),
+    (H,_,blue,_,_,_),
+    {plus_or_minus_one(G, H)},
 
   % 15. The man who smokes blend has a neighbor who drinks water.
-  member( (I,_,_,_,blend,_), Neighborhood), plus_or_minus_one(I, J),
-  member( (J,_,_,water,_,_), Neighborhood),
+    (I,_,_,_,blend,_),
+    (J,_,_,water,_,_),
+    {plus_or_minus_one(I, J)},
 
   % Question: Who owns the fish?
-  member( (_,_,_,_,_,fish), Neighborhood).
+    (_,_,_,_,_,fish) ]).
 
 % This is probably very very very bad practice
 plus_or_minus_one(I, J) :- Im is I-1, Ip is I+1, member(J, [Im, Ip]).

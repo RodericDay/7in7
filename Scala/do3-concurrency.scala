@@ -11,12 +11,35 @@ NOTE: tagsoup-1.2.1.jar was manually placed in libexec for HTML parsing to work
 
 import akka.actor._
 
-// val path = "http://www.amazon.com"
-val path = "../docs/Io Programming Guide.html"
-
+// set up TagSoup parsing
 val parserFactory = new org.ccil.cowan.tagsoup.jaxp.SAXFactoryImpl
 val parser = parserFactory.newSAXParser()
-val source = new org.xml.sax.InputSource(path)
 val adapter = new scala.xml.parsing.NoBindingFactoryAdapter
-val doc = adapter.loadXML(source, parser)
-println(doc \ "div")
+
+def parseHub(path:String) {
+    val source = new org.xml.sax.InputSource(path)
+    val doc = adapter.loadXML(source, parser)
+    val links = (doc \\ "a").map(_ \\ "@href")
+                            .filter(_.length>0)
+                            .map(_.mkString)
+                            .map(l => if(l.startsWith("http")) l else path+l)
+    val fmtstr = "%s [%s kB] [%s links]"
+    println(fmtstr format (path, doc.mkString.size/1000, links.length))
+    links.map(parseLink)
+}
+
+def parseLink(path:String) {
+    var size = 0
+    try {
+        val source = new org.xml.sax.InputSource(path)
+        val doc = adapter.loadXML(source, parser)
+        size = doc.mkString.size
+    } catch {
+        case e: java.io.FileNotFoundException    => val err = "404"
+        case e: java.io.IOException              => val err = "500+"
+    } finally {
+        println("\t[%s bytes] %s" format (size, path.slice(0, 80)))
+    }
+}
+
+List("http://www.amazon.com").map(parseHub)

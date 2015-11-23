@@ -20,7 +20,7 @@ object PageLoader {
         try {
             size = io.Source.fromURL(url).mkString.length
         } catch {
-            case e: java.io.IOException => size = -1
+            case e: java.io.IOException => size = 0
         }
         return size
     }
@@ -30,22 +30,25 @@ def parseHub(path:String) {
     val source = new org.xml.sax.InputSource(path)
     val doc = adapter.loadXML(source, parser)
     val links = (doc \\ "a").map(_ \\ "@href")
-                            .filter(_.length>0)
                             .map(_.mkString)
-                            .map(l => if(l.startsWith("http")) l else path+l)
-    val fmtstr = "%s [%s kB] [%s links]"
-    println(fmtstr format (path, doc.mkString.size/1000, links.length))
+                            .filter(_.length>1)
+                            .filter(!_.startsWith("#"))
+                            .filter(!_.contains("?"))
+                            .map(l => if(l.startsWith("/")) path+l else l)
+    println("%s [%s kB]" format (path, doc.mkString.size/1000))
 
+    var sum = 0
     val caller = actors.Actor.self
     for(link <- links) {
         actors.Actor.actor { caller ! (link, PageLoader.getPageSize(link)) }
     }
     for(i <- 1 to links.size) {
         actors.Actor.receive {
-            case (link, size) =>
-                println("\t[%s bytes] %s" format (size, link))
+            case (link, size:Integer) => sum += size
+                // println("\t[%s bytes] %s" format (size, link)) // toggle for debug
         }
     }
+    println("%s kB in %s links" format (sum/1000, links.length))
 }
 
-List("http://www.amazon.com").map(parseHub)
+List("http://www.google.com", "http://tastespotting.com").map(parseHub)

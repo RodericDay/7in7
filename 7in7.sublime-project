@@ -34,6 +34,15 @@
                 "PATH": "/usr/local/bin:$PATH",
             }
         }
+        ,
+        {
+            "name": "7in7 (Erlang)",
+            "cmd": ["escript $file"],
+            "shell": true,
+            "env": {
+                "PATH": "/usr/local/bin:$PATH",
+            }
+        }
     ],
 
     "folders":
